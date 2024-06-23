@@ -1,0 +1,77 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+model Role {
+  appUsers  AppUser[]
+  createdAt DateTime  @default(now())
+  id        String    @id @default(cuid())
+  roleName  String?
+  updatedAt DateTime  @updatedAt
+}
+
+model Bia {
+  createdAt    DateTime    @default(now())
+  data         Json?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?
+  id           String      @id @default(cuid())
+  impactScale  Json?
+  updatedAt    DateTime    @updatedAt
+}
+
+model Department {
+  bias                  Bia[]
+  createdAt             DateTime         @default(now())
+  departmentDescription String?
+  departmentName        String?
+  gapAssessments        GapAssessment[]
+  id                    String           @id @default(cuid())
+  riskAssessments       RiskAssessment[]
+  updatedAt             DateTime         @updatedAt
+}
+
+model GapAssessment {
+  assessmentDetails Json?
+  createdAt         DateTime    @default(now())
+  department        Department? @relation(fields: [departmentId], references: [id])
+  departmentId      String?
+  id                String      @id @default(cuid())
+  updatedAt         DateTime    @updatedAt
+}
+
+model RiskAssessment {
+  analysisDetails Json?
+  createdAt       DateTime    @default(now())
+  department      Department? @relation(fields: [departmentId], references: [id])
+  departmentId    String?
+  id              String      @id @default(cuid())
+  updatedAt       DateTime    @updatedAt
+}
+
+model AppUser {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  password  String?
+  role      Role?    @relation(fields: [roleId], references: [id])
+  roleId    String?
+  updatedAt DateTime @updatedAt
+  username  String?
+}
